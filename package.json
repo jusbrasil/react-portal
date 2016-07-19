@@ -23,7 +23,8 @@
     "clean": "rimraf build",
     "test": "mocha ./test/portal_spec.js",
     "lint": "mocha test/eslint_spec.js",
-    "prepublish": "cross-env NODE_ENV=production npm run build"
+    "prepublish": "cross-env NODE_ENV=production npm run build",
+    "postinstall": "npm run clean && env NODE_ENV=production npm run build"
   },
   "tags": [
     "react"
