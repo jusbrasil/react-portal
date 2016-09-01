@@ -94,8 +94,8 @@ with `onClick` handler that triggers portal opening. **How to close the portal t
 
 ### Optional
 
-#### target: HTMLElement
-The element you want portal to be appended to.
+#### targetSelector: string
+The selector of the element you want portal to be appended to.
 
 #### closeOnEsc: bool
 If true, the portal can be closed by the key ESC.

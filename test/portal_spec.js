@@ -234,11 +234,19 @@ describe('react-portal', () => {
 
     context('when target is set', () => {
       context('when layer passed to component as a prop', () => {
+        it('should append portal with children to the body when targetSelector is invalid', () => {
+          const wrapper = mount(<Portal isOpened targetSelector=".unknow-target"><p>Hi</p></Portal>);
+          assert.equal(wrapper.instance().node.firstElementChild.tagName, 'P');
+          assert.equal(document.body.lastElementChild, wrapper.instance().node);
+          assert.equal(document.body.childElementCount, 1);
+        });
+
         it('should append portal with children to the target', () => {
           const modalLayer = document.createElement('div');
+          modalLayer.className = 'the-target';
           document.body.appendChild(modalLayer);
 
-          const wrapper = mount(<Portal isOpened target={modalLayer}><p>Hi</p></Portal>);
+          const wrapper = mount(<Portal isOpened targetSelector=".the-target"><p>Hi</p></Portal>);
           assert.equal(modalLayer.getElementsByTagName('p')[0].textContent, 'Hi');
           assert.equal(modalLayer.lastElementChild, wrapper.instance().node);
           assert.equal(modalLayer.childElementCount, 1);
@@ -246,9 +254,10 @@ describe('react-portal', () => {
 
         it('should remove portal from the target when isOpened set to false', () => {
           const modalLayer = document.createElement('div');
+          modalLayer.className = 'the-target';
           document.body.appendChild(modalLayer);
 
-          const wrapper = mount(<Portal isOpened target={modalLayer}><p>Hi</p></Portal>);
+          const wrapper = mount(<Portal isOpened targetSelector=".the-target"><p>Hi</p></Portal>);
           assert.equal(modalLayer.getElementsByTagName('p')[0].textContent, 'Hi');
           wrapper.setProps({ isOpened: false });
           assert(!modalLayer.getElementsByTagName('p')[0]);
