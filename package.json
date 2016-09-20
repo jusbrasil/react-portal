@@ -11,7 +11,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/tajo/react-portal"
+    "url": "https://github.com/jusbrasil/react-portal"
   },
   "author": "Vojtech Miksu <vojtech@miksu.cz>",
   "license": "MIT",
@@ -24,7 +24,7 @@
     "test": "mocha ./test/portal_spec.js",
     "lint": "mocha test/eslint_spec.js",
     "prepublish": "cross-env NODE_ENV=production npm run build",
-    "postinstall": "npm run clean && env NODE_ENV=production npm run build"
+    "postinstall": ""
   },
   "tags": [
     "react"
