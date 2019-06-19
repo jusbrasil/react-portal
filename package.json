@@ -1,8 +1,8 @@
 {
   "name": "react-portal",
-  "version": "2.2.3-jusbrasil",
+  "version": "2.3.1-jusbrasil",
   "description": "React component for transportation of modals, lightboxes, loading bars... to document.body",
-  "main": "build/portal",
+  "main": "build/index",
   "files": [
     "*.md",
     "LICENSE",
@@ -17,7 +17,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node devServerIndex.js",
-    "build": "mkdir -p build && babel ./lib/portal.js --out-file ./build/portal.js",
+    "build": "mkdir -p build && babel ./lib --out-dir ./build",
     "build:examples": "npm run clean && npm run build:examples:webpack",
     "build:examples:webpack": "cross-env NODE_ENV=production webpack --config webpack.config.prod.babel.js",
     "clean": "rimraf build",

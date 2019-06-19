@@ -29,35 +29,51 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Portal = function (_React$PureComponent) {
   _inherits(Portal, _React$PureComponent);
 
-  function Portal(props) {
+  function Portal() {
     _classCallCheck(this, Portal);
 
-    var _this = _possibleConstructorReturn(this, (Portal.__proto__ || Object.getPrototypeOf(Portal)).call(this, props));
+    var _this = _possibleConstructorReturn(this, (Portal.__proto__ || Object.getPrototypeOf(Portal)).call(this));
 
-    _this.state = { active: props.isOpened };
+    _this.state = { active: false };
     _this.closePortal = _this.closePortal.bind(_this);
+    _this.portal = null;
     _this.node = null;
     return _this;
   }
 
   _createClass(Portal, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      if (this.props.isOpened) {
+        this.openPortal();
+      }
+    }
+  }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(newProps) {
-      if (newProps.isOpened !== this.state.active) {
+      // portal's 'is open' state is handled through the prop isOpened
+      if (typeof newProps.isOpened !== 'undefined') {
         if (newProps.isOpened) {
-          this.openPortal(newProps);
-        } else {
+          if (this.state.active) {
+            this.renderPortal(newProps);
+          } else {
+            this.openPortal(newProps);
+          }
+        }
+        if (!newProps.isOpened && this.state.active) {
           this.closePortal();
         }
+      }
+
+      // portal handles its own 'is open' state
+      if (typeof newProps.isOpened === 'undefined' && this.state.active) {
+        this.renderPortal(newProps);
       }
     }
   }, {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
-      if (this.node) {
-        var htmlElement = this.targetElement(this.props.targetSelector);
-        htmlElement.removeChild(this.node);
-      }
+      this.closePortal(true);
     }
   }, {
     key: 'openPortal',
@@ -65,15 +81,34 @@ var Portal = function (_React$PureComponent) {
       var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props;
 
       this.setState({ active: true });
-      props.onOpen();
+      this.renderPortal(props);
+      this.props.onOpen(this.node);
     }
   }, {
     key: 'closePortal',
     value: function closePortal() {
+      var _this2 = this;
+
+      var isUnmounted = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+      var resetPortalState = function resetPortalState() {
+        if (_this2.node) {
+          _reactDom2.default.unmountComponentAtNode(_this2.node);
+          var htmlElement = _this2.targetElement(_this2.props.targetSelector);
+          htmlElement.removeChild(_this2.node);
+        }
+        _this2.portal = null;
+        _this2.node = null;
+        if (isUnmounted !== true) {
+          _this2.setState({ active: false });
+        }
+      };
+
       if (this.state.active) {
-        this.setState({ active: false });
         if (this.props.beforeClose) {
-          this.props.beforeClose();
+          this.props.beforeClose(this.node, resetPortalState);
+        } else {
+          resetPortalState();
         }
 
         this.props.onClose();
@@ -89,19 +124,26 @@ var Portal = function (_React$PureComponent) {
       return htmlElement;
     }
   }, {
-    key: 'render',
-    value: function render() {
-      if (!this.state.active) {
-        return null;
-      }
-
+    key: 'renderPortal',
+    value: function renderPortal(props) {
       if (!this.node) {
         this.node = document.createElement('div');
-        var htmlElement = this.targetElement(this.props.targetSelector);
+        var htmlElement = this.targetElement(props.targetSelector);
         htmlElement.appendChild(this.node);
       }
 
-      return _reactDom2.default.createPortal(this.props.children, this.node);
+      var children = props.children;
+      // https://gist.github.com/jimfb/d99e0678e9da715ccf6454961ef04d1b
+      if (typeof props.children.type === 'function') {
+        children = _react2.default.cloneElement(props.children, { closePortal: this.closePortal });
+      }
+
+      this.portal = _reactDom2.default.unstable_renderSubtreeIntoContainer(this, children, this.node, this.props.onUpdate);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return null;
     }
   }]);
 
@@ -119,7 +161,8 @@ Portal.propTypes = {
   isOpened: _propTypes2.default.bool,
   onOpen: _propTypes2.default.func,
   onClose: _propTypes2.default.func,
-  beforeClose: _propTypes2.default.func
+  beforeClose: _propTypes2.default.func,
+  onUpdate: _propTypes2.default.func
 };
 exports.default = Portal;
 module.exports = exports['default'];
