@@ -26,6 +26,50 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+function disableEventBubbling(children) {
+  var stopPropagation = function stopPropagation(e) {
+    return e.stopPropagation();
+  };
+  return _react2.default.createElement(
+    'span',
+    {
+      onClick: stopPropagation,
+      onDoubleClick: stopPropagation,
+      onContextMenu: stopPropagation,
+
+      onDrag: stopPropagation,
+      onDragEnd: stopPropagation,
+      onDragEnter: stopPropagation,
+      onDragExit: stopPropagation,
+      onDragLeave: stopPropagation,
+      onDragOver: stopPropagation,
+      onDragStart: stopPropagation,
+      onDrop: stopPropagation,
+
+      onMouseDown: stopPropagation,
+      onMouseEnter: stopPropagation,
+      onMouseLeave: stopPropagation,
+      onMouseMove: stopPropagation,
+      onMouseOver: stopPropagation,
+      onMouseOut: stopPropagation,
+      onMouseUp: stopPropagation,
+
+      onKeyDown: stopPropagation,
+      onKeyPress: stopPropagation,
+      onKeyUp: stopPropagation,
+
+      onFocus: stopPropagation,
+      onBlur: stopPropagation,
+
+      onChange: stopPropagation,
+      onInput: stopPropagation,
+      onInvalid: stopPropagation,
+      onSubmit: stopPropagation
+    },
+    children
+  );
+}
+
 var Portal = function (_React$PureComponent) {
   _inherits(Portal, _React$PureComponent);
 
@@ -101,7 +145,7 @@ var Portal = function (_React$PureComponent) {
         htmlElement.appendChild(this.node);
       }
 
-      return _reactDom2.default.createPortal(this.props.children, this.node);
+      return _reactDom2.default.createPortal(this.props.enableEventBubbling ? this.props.children : disableEventBubbling(this.props.children), this.node);
     }
   }]);
 
@@ -116,6 +160,7 @@ Portal.defaultProps = {
 Portal.propTypes = {
   children: _propTypes2.default.element.isRequired,
   targetSelector: _propTypes2.default.string,
+  enableEventBubbling: _propTypes2.default.bool,
   isOpened: _propTypes2.default.bool,
   onOpen: _propTypes2.default.func,
   onClose: _propTypes2.default.func,
